@@ -38,8 +38,10 @@ module.exports = function () {
       date: new Date().toISOString()
     })
     // Guardando la nueva nota
-    newNote.save()
-      .then((saveNote) => res.status(201).json(saveNote))
+    if(newNote.content){
+      newNote.save()
+        .then((saveNote) => res.status(201).json(saveNote))
+    }
 
   })
 
