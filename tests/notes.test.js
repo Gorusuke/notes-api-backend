@@ -7,11 +7,10 @@ const {api, initialNotes, getAllContentFromNotes} = require('./helper')
 beforeEach(async () => {
   await Note.deleteMany({})
 
-  const note1 = new Note(initialNotes[0])
-  await note1.save()
-
-  const note2 = new Note(initialNotes[1])
-  await note2.save()
+  for (const note of initialNotes) {
+    const noteObject = new Note(note)
+    await noteObject.save()    
+  }
 })
 
 test('notes are returned as json ', async () => {
@@ -68,12 +67,10 @@ test('a note can be deleted', async () => {
 
   await api
     .delete(`/api/notes/${noteToDelete.id}`)
-    .expect(204)
+    .expect(404)
 
   const { contents, response: secondResponse } = await getAllContentFromNotes()
-  console.info(secondResponse)
   expect(secondResponse.body).toHaveLength(initialNotes.length - 1)
-
   expect(contents).toBeUndefined()
 })
 
@@ -91,7 +88,7 @@ test('a note that has a valid id but do not exist can not be deleted', async () 
   const validObjectIdThatDoNotExist = '604ef8475c534f35ccf96b89'
   await api
     .delete(`/api/notes/${validObjectIdThatDoNotExist}`)
-    .expect(204)
+    .expect(404)
 
   const { response } = await getAllContentFromNotes()
 

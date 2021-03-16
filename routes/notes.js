@@ -8,9 +8,14 @@ module.exports = function () {
     res.send('<h1>Welcome.!</h1>')
   })
 
-  router.get('/api/notes', (req, res) => {
+  router.get('/api/notes', async (req, res) => {
     // Obteniendo todas las notas
-    Note.find({}).then((result) => res.json(result))
+    const notes = await Note.find({})
+    res.json(notes)
+
+    // Note.find({}).then(notes => {
+    //   res.json(notes)
+    // }
   })
 
 
@@ -26,7 +31,7 @@ module.exports = function () {
     }).catch(err => next(err))
   })
 
-  router.post('/api/notes', (req, res) => {
+  router.post('/api/notes', async (req, res) => {
     const note = req.body
     if (!note || !note.content) {
       res.status(400).json({error: 'note.content is missing'})
@@ -38,11 +43,18 @@ module.exports = function () {
       date: new Date().toISOString()
     })
     // Guardando la nueva nota
-    if(newNote.content){
-      newNote.save()
-        .then((saveNote) => res.status(201).json(saveNote))
+    // if(newNote.content){
+    //   newNote.save()
+    //     .then((saveNote) => res.status(201).json(saveNote))
+    //
+    try {
+      if(newNote.content){
+        const saveNote = await newNote.save()
+        res.status(201).json(saveNote)
+      }
+    } catch (error) {
+      next(error)
     }
-
   })
 
   router.put('/api/notes/:id', (req, res, next) => {
@@ -59,12 +71,16 @@ module.exports = function () {
       .catch(err => next(err))
   })
 
-  router.delete('/api/notes/:id', (req, res, next) => {
+  router.delete('/api/notes/:id', async (req, res, next) => {
     const {id} = req.params
-    // Eliminando por id
+    // Eliminando por id  
     Note.findByIdAndDelete(id)
-      .then(() => res.status(204).end())
+      .then(() => res.status(404).end())
       .catch(err => next(err))
+
+    // const result = await Note.findByIdAndDelete(id)
+    // if (result === null) return res.sendStatus(404)
+    // res.status(204).end()
   })
 
   router.use((req, res, next) => {

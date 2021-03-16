@@ -14,6 +14,11 @@ const initialNotes = [
     content: 'Probando el test con Node',
     important: true,
     date: new Date() 
+  },
+  {
+    content: 'Agregando otra prueba',
+    important: false,
+    date: new Date() 
   }
 ]
 
