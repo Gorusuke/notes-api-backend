@@ -12,7 +12,10 @@ module.exports = function () {
 
   router.get('/api/notes', async (req, res) => {
     // Obteniendo todas las notas
-    const notes = await Note.find({})
+    const notes = await Note.find({}).populate('user', {
+      username: 1,
+      name: 1
+    }) // .populate hace que se muestren las notas en el usuario! y los parametros es para devolver solo lo que quieres
     res.json(notes)
 
     // Note.find({}).then(notes => {
@@ -33,7 +36,7 @@ module.exports = function () {
     }).catch(err => next(err))
   })
 
-  router.post('/api/notes', async (req, res) => {
+  router.post('/api/notes', async (req, res, next) => {
 
     const {content, important = false, userId} = req.body
 
@@ -58,7 +61,7 @@ module.exports = function () {
       if(newNote.content){
         const saveNote = await newNote.save()
         // Accedemos a las notas de los usuarios y le concatenamos las nuevas notas
-        user.notes = user.notes.concat(savedNote._id)
+        user.notes = user.notes.concat(saveNote._id)
         await user.save() // Guardando las nuevas notas
 
         res.status(201).json(saveNote)
