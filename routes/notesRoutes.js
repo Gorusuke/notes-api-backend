@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const Note = require('../models/Note')
+const User = require('../models/User')
 
 module.exports = function () {
   
@@ -33,15 +34,20 @@ module.exports = function () {
   })
 
   router.post('/api/notes', async (req, res) => {
-    const note = req.body
-    if (!note || !note.content) {
-      res.status(400).json({error: 'note.content is missing'})
+
+    const {content, important = false, userId} = req.body
+
+    const user = await User.findById(userId)
+
+    if (!content) {
+      res.status(400).json({error: 'content is missing'})
     }
     // Creando la nueva nota a guardar
     const newNote = new Note({
-      content: note.content,
-      important: typeof note.important !== 'undefined' ? note.important : false,
-      date: new Date().toISOString()
+      content,
+      important,
+      date: new Date().toISOString(),
+      user: user._id
     })
     // Guardando la nueva nota
     // if(newNote.content){
@@ -51,6 +57,10 @@ module.exports = function () {
     try {
       if(newNote.content){
         const saveNote = await newNote.save()
+        // Accedemos a las notas de los usuarios y le concatenamos las nuevas notas
+        user.notes = user.notes.concat(savedNote._id)
+        await user.save() // Guardando las nuevas notas
+
         res.status(201).json(saveNote)
       }
     } catch (error) {
