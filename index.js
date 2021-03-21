@@ -4,12 +4,14 @@ require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
 const app = express()
-const routes = require('./routes/notes')
+const noteRoutes = require('./routes/notesRoutes')
+const userRoutes = require('./routes/userRoutes')
 
 app.use(cors())
 app.use(express.json())
 
-app.use('/', routes())
+app.use('/api/users', userRoutes())
+app.use('/', noteRoutes())
 
 const PORT = process.env.PORT || 3001
 

@@ -3,6 +3,7 @@ const router = express.Router()
 const Note = require('../models/Note')
 
 module.exports = function () {
+  
   router.get('/', (req, res) => {
     // Obteniendo la pagina principal
     res.send('<h1>Welcome.!</h1>')

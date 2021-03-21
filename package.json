@@ -7,13 +7,14 @@
     "dev": "cross-env NODE_ENV=development nodemon index.js",
     "lint": "eslint .",
     "start": "cross-env NODE_ENV=production node index.js",
-    "test": "cross-env NODE_ENV=test jest --verbose --silent",
+    "test": "cross-env NODE_ENV=test PORT=4000 jest --verbose --silent tests/user.test.js",
     "test:watch": "npm run test -- --watch"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "cors": "2.8.5",
     "cross-env": "^7.0.3",
     "dotenv": "^8.2.0",
